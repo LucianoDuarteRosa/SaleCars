@@ -19,13 +19,24 @@ namespace SaleCars.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SaleModel>>> GetSales()
         {
-            return await _context.Sales.ToListAsync();
+            var cars = await _context.Sales
+                                    .Include(sale => sale.Car)
+                                    .Include(sale => sale.Client)
+                                    .Include(sale => sale.User)
+                                    .Include(sale => sale.SaleStatus)
+                                    .ToListAsync();
+            return cars;
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<SaleModel>> GetSaleModel(int id)
         {
-            var saleModel = await _context.Sales.FindAsync(id);
+            var saleModel = await _context.Sales
+                                            .Include(sale => sale.Car)
+                                            .Include(sale => sale.Client)
+                                            .Include(sale => sale.User)
+                                            .Include(sale => sale.SaleStatus)
+                                            .FirstOrDefaultAsync(car => car.CarId == id);
 
             if (saleModel == null)
             {
@@ -70,7 +81,16 @@ namespace SaleCars.Controllers
             _context.Sales.Add(saleModel);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetSaleModel", new { id = saleModel.SaleId }, saleModel);
+            var car = await _context.Cars.FindAsync(saleModel.CarId);
+            if (car != null)
+            {
+                car.CarIsSale = false;
+
+                _context.Entry(car).Property(c => c.CarIsSale).IsModified = true;
+
+                await _context.SaveChangesAsync();
+            }
+                return CreatedAtAction("GetSaleModel", new { id = saleModel.SaleId }, saleModel);
         }
 
         [HttpDelete("{id}")]

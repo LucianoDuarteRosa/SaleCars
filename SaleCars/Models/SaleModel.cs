@@ -30,7 +30,7 @@ public class SaleModel
     [Required]
     public int ClientId { get; set; }
 
-    public SaleStatusModel Status { get; set; }
+    public SaleStatusModel SaleStatus { get; set; }
     public UserModel User { get; set; }
     public CarModel Car { get; set; }   
     public ClientModel Client { get; set; }

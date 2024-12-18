@@ -299,9 +299,6 @@ namespace SaleCars.Migrations
                     b.Property<decimal>("SaleValue")
                         .HasColumnType("decimal(18, 2)");
 
-                    b.Property<int?>("StatusSaleStatusId")
-                        .HasColumnType("int");
-
                     b.Property<int>("UserID")
                         .HasColumnType("int");
 
@@ -311,7 +308,7 @@ namespace SaleCars.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.HasIndex("StatusSaleStatusId");
+                    b.HasIndex("SaleStatusId");
 
                     b.HasIndex("UserID");
 
@@ -537,9 +534,11 @@ namespace SaleCars.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SaleCars.Models.SaleStatusModel", "Status")
+                    b.HasOne("SaleCars.Models.SaleStatusModel", "SaleStatus")
                         .WithMany()
-                        .HasForeignKey("StatusSaleStatusId");
+                        .HasForeignKey("SaleStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("SaleCars.Models.UserModel", "User")
                         .WithMany()
@@ -551,7 +550,7 @@ namespace SaleCars.Migrations
 
                     b.Navigation("Client");
 
-                    b.Navigation("Status");
+                    b.Navigation("SaleStatus");
 
                     b.Navigation("User");
                 });
